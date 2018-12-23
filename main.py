@@ -166,7 +166,7 @@ if __name__ == '__main__':
         accuracy = evaluate(validation_loader)
         all_accuracy.append(accuracy)
         if count == 10:
-            print("end epoch: ",epoch + 1)
+            print("end epoch: ",epoch + 1,'max_accuracy=',max_accuracy)
             end_epoch=epoch+1
             break
         if accuracy <= max_accuracy:
@@ -176,7 +176,8 @@ if __name__ == '__main__':
             #print('epoch=',epoch,'max_accuracy=',max_accuracy)
             count=0
     plt.figure()
-    plt.plot(list(range(len(all_accuracy)),all_accuracy))
+
+    plt.plot(list(range(len(all_accuracy))),all_accuracy)
     plt.show()
 
     #用全部数据进行训练
@@ -184,9 +185,7 @@ if __name__ == '__main__':
     test_d = M_dataset('test.csv', 0)
     torch.manual_seed(1)
     # Hyper Parameters
-    EPOCH = end_epoch
-    BATCH_SIZE = 50
-    LR = 0.001  # 学习率
+    EPOCH = end_epoch-10
     # 批训练
     train_loader = torch.utils.data.DataLoader(dataset=train_d, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = torch.utils.data.DataLoader(dataset=test_d, batch_size=BATCH_SIZE, shuffle=False)
