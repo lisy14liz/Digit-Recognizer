@@ -67,18 +67,17 @@ class CNN(nn.Module):
         output = self.out(x)
         return output
 
+
 def evaluate(data_loader):
+    # 得到在训练集上的准确率
     cnn.eval()
     loss = 0
     correct = 0
 
     for data, target in data_loader:
         data, target = Variable(data, volatile=True), Variable(target)
-
         output = cnn(data)
-
         loss += F.cross_entropy(output, target, size_average=False).item()
-
         pred = output.data.max(1, keepdim=True)[1]
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
@@ -90,26 +89,26 @@ def evaluate(data_loader):
 
 
 def prediciton(data_loader):
+    # 得到在测试集上的预测结果
     cnn.eval()
     test_pred = torch.LongTensor()
 
     for i, data in enumerate(data_loader):
         data = Variable(data, volatile=True)
-
         output = cnn(data)
-
         pred = output.cpu().data.max(1, keepdim=True)[1]
         test_pred = torch.cat((test_pred, pred), dim=0)
 
     return test_pred
-if __name__ == '__main__':
 
+
+if __name__ == '__main__':
     train_d = M_dataset('train.csv', 1)
     test_d = M_dataset('test.csv', 0)
 
     torch.manual_seed(1)
     # Hyper Parameters
-    EPOCH = 1  # 训练整批数据多少次, 为了节约时间, 我们只训练一次
+    EPOCH = 10
     BATCH_SIZE = 50
     LR = 0.001  # 学习率
     DOWNLOAD_MNIST = False
@@ -118,7 +117,6 @@ if __name__ == '__main__':
     train_loader = torch.utils.data.DataLoader(dataset=train_d, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = torch.utils.data.DataLoader(dataset=test_d,
                                               batch_size=BATCH_SIZE, shuffle=False)
-
 
     cnn = CNN()
     cnn.train()
@@ -130,7 +128,7 @@ if __name__ == '__main__':
     for epoch in range(EPOCH):
         for step, (b_x, b_y) in enumerate(train_loader):  # 分配 batch data, normalize x when iterate train_loader
             b_x, b_y = Variable(b_x), Variable(b_y)
-            output = cnn(b_x) # cnn output
+            output = cnn(b_x)  # cnn output
             loss = loss_func(output, b_y)  # cross entropy loss
             optimizer.zero_grad()  # clear gradients for this training step
             loss.backward()  # backpropagation, compute gradients
